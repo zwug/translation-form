@@ -16,44 +16,49 @@ translations = [
 	];
 
 
-
-
-
-app.controller('formController', ['$scope', function($scope){
-	$scope.locale = 'en';//current loc
-	$scope.locales = locales;
-	$scope.translations = translations;
-
-	$scope.$watch('locale', function(newValue, oldValue) {
-		if(oldValue != 'new')
-  			$scope.locales.push(oldValue);
-  			indexDel = $scope.locales.indexOf(newValue);
-	    		if(indexDel > -1){
-	    			$scope.locales.splice(indexDel, 1);
-	    		}
-	});
-
-	$scope.changeLocale = function(translation){
-		$scope.locale = translation.locale;
-	}
-
-	$scope.updateTranslation = function(translation){
-		//insert_to_database
-	}
-
-	$scope.createTranslation = function(){
-		if($scope.locales[0]){
-			$scope.translations.push({
-				locale: $scope.locales[0]
-			});
-		}
-	}
-
-}]);
-
 app.directive('translationForm', function(){
 	return{
-		contoller: 'formController',
+		restrict: 'E',
+		scope: {
+			'values': '=ngModel',
+			'price' : '=price'
+		},
+		link: function (scope, element, attrs) {
+			var myPrice = attrs['ngModel'];
+			console.log(scope.values);
+		},
+		controller: function($scope){
+			$scope.locale = 'en';//current loc
+			$scope.locales = locales;
+			
+			//$scope.translations = translations;
+
+			$scope.$watch('locale', function(newValue, oldValue) {
+				if(oldValue != 'new')
+		  			$scope.locales.push(oldValue);
+		  			indexDel = $scope.locales.indexOf(newValue);
+			    		if(indexDel > -1){
+			    			$scope.locales.splice(indexDel, 1);
+			    		}
+			});
+
+			$scope.changeLocale = function(translation){
+				$scope.locale = translation.locale;
+			}
+
+			$scope.updateTranslation = function(translation){
+				//insert_to_database
+			}
+
+			$scope.createTranslation = function(){
+				if($scope.locales[0]){
+					$scope.translations.push({
+						locale: $scope.locales[0]
+					});
+				}
+			}
+
+		},
 		templateUrl: 'form-template.html'
 		};
 });
