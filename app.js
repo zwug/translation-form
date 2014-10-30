@@ -1,49 +1,59 @@
 var app = angular.module('app', []);
 
-locales = [
-		 'de', 'it', 'en', 'fr'
+app.controller('init', function ($scope){
+	$scope.translations = [
+		{
+			locale : 'en',
+			name: 'English club'
+		},
+		{
+			locale : 'lt',
+			workTime: '10:00 - 18:00'
+		}
 	];
 
-translations = [
-	{
-		locale : 'en',
-		name: 'English club'
-	},
-	{
-		locale : 'fr',
-		workTime: '10:00 - 18:00'
-	}
+	$scope.locales = [
+		 'de', 'it', 'en', 'lt', 'fr'
 	];
-
+});
 
 app.directive('translationForm', function(){
 	return{
 		restrict: 'E',
 		scope: {
-			'values': '=ngModel',
-			'price' : '=price'
+			'translations': '=ngModel',
+			'locales' : '=locales'
 		},
-		link: function (scope, element, attrs) {
-			var myPrice = attrs['ngModel'];
-			console.log(scope.values);
-		},
+		templateUrl: 'form-template.html',
 		controller: function($scope){
-			$scope.locale = 'en';//current loc
-			$scope.locales = locales;
+			$scope.locale = 'en';
+			$scope.freeLocales = $scope.locales;
 			
-			//$scope.translations = translations;
+			var freeLocs = function(){
+				var arrLocales = $scope.locales;								
+				for (var i = $scope.translations.length - 1; i >= 0; i--) {
+					var indexVal = arrLocales.indexOf($scope.translations[i].locale);
+					if ((indexVal > -1)&&($scope.locale != $scope.translations[i].locale)) 
+					{
+						arrLocales.splice(indexVal, 1);
+					}
+				}
+				$scope.freeLocales = arrLocales;
+			}
 
 			$scope.$watch('locale', function(newValue, oldValue) {
-				if(oldValue != 'new')
-		  			$scope.locales.push(oldValue);
-		  			indexDel = $scope.locales.indexOf(newValue);
-			    		if(indexDel > -1){
-			    			$scope.locales.splice(indexDel, 1);
+		  			indexDel = $scope.freeLocales.indexOf(newValue);
+			    		if((indexDel > -1)&&($scope.locale != newValue)){
+			    			$scope.freeLocales.splice(indexDel, 1, oldValue);
 			    		}
+			    	freeLocs();
 			});
 
 			$scope.changeLocale = function(translation){
 				$scope.locale = translation.locale;
+				if($scope.freeLocales.indexOf($scope.locale) == -1){
+					$scope.freeLocales.push($scope.locale);
+				}
 			}
 
 			$scope.updateTranslation = function(translation){
@@ -51,32 +61,19 @@ app.directive('translationForm', function(){
 			}
 
 			$scope.createTranslation = function(){
-				if($scope.locales[0]){
-					$scope.translations.push({
-						locale: $scope.locales[0]
-					});
+				if($scope.freeLocales[0]){
+				var i = 0;
+					if($scope.freeLocales[0] == $scope.locale){
+						var i = 1;
+					}
+					if($scope.freeLocales[1]){
+						$scope.translations.push({
+							locale: $scope.freeLocales[i]
+						});
+						freeLocs();
+					}
 				}
 			}
-
-		},
-		templateUrl: 'form-template.html'
-		};
+		}
+	};
 });
-
-app.filter('freelocale', function(){ 
-	    return function() {  
-	    	var result = locales;
-	    	var tr = translations;
-	    	var existLocales = [];
-
-	    	function logArrayElements(element, index, array) {
-	    		var indexDel = result.indexOf(element.locale);
-	    		if(indexDel > -1){
-	    			result.splice(indexDel, 1);
-	    		}
-			}
-
-			tr.forEach(logArrayElements);
-    		return result;
-	  };
-  });

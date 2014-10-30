@@ -5,23 +5,10 @@
     <script src="app.js"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap.css">
 </head>
-<body ng-app="app">
+<body ng-app="app" ng-controller="init">
 <div class="container">
     <div class="col-md-12" >
-    <script type="text/javascript">
-    	var translation = [
-	{
-		locale : 'en',
-		name: 'English club'
-	},
-	{
-		locale : 'fr',
-		workTime: '10:00 - 18:00'
-	}
-	];
-		caf = {translations : translation};
-    </script>
-        <translation-form price="100"  ng-model="cafe.translations" ng-init="cafe.translations[0].locale='1'"
+        <translation-form price="100"  ng-model="translations" locales="locales"
         ng-submit="saveTranslation">
         	<p>loh</p>
         </translation-form>
